@@ -29,7 +29,7 @@ UICollectionViewDelegateFlowLayout>
     self.view.backgroundColor = [UIColor whiteColor];
     
     UICollectionViewFlowLayout *layout= [[UICollectionViewFlowLayout alloc] init];
-    _collection = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 64, 375, 667) collectionViewLayout:layout];
+    _collection = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenW, kScreenH) collectionViewLayout:layout];
     _collection.backgroundColor = [UIColor whiteColor];
     _collection.userInteractionEnabled = YES;
     //设置每一块的大小
@@ -43,14 +43,14 @@ UICollectionViewDelegateFlowLayout>
     [self.view addSubview:_collection];
     _collection.dataSource = self;
     _collection.delegate = self;
+    [_collection registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"headView"];
     [_collection registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
 //    NSMutableArray *array1 = [NSMutableArray arrayWithArray:@[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10"]];
 //    NSMutableArray *array2= [NSMutableArray arrayWithArray:@[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10"]];
     topArray = [[NSMutableArray alloc]initWithArray:@[[NSMutableArray arrayWithArray:@[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10"]],[NSMutableArray arrayWithArray:@[@"10",@"11",@"12",@"13",@"14",@"15",@"16",@"17",@"18",@"19",@"110"]]]];
 //    bottomArray = [[NSMutableArray alloc]initWithArray:@[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10"]];
     
-    UILongPressGestureRecognizer * longPressGr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressToDo:)];
-    longPressGr.minimumPressDuration = 1.0;
+    UILongPressGestureRecognizer *longPressGr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressToDo:)];
     [_collection addGestureRecognizer:longPressGr];
 }
 
@@ -75,7 +75,7 @@ UICollectionViewDelegateFlowLayout>
         [_collection cancelInteractiveMovement];
     }
 }
-
+#pragma mark - collectionView delegate & dataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return topArray.count;
@@ -106,7 +106,19 @@ UICollectionViewDelegateFlowLayout>
     [cell.contentView addSubview:label];
     return cell;
 }
-#pragma mark touch
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionReusableView *view = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"headView" forIndexPath:indexPath];
+    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, kScreenW, 20.0f)];
+    titleLabel.backgroundColor = [UIColor lightGrayColor];
+    titleLabel.text = indexPath.section ==0?@"我的频道":@"发现更多频道";
+    [view addSubview:titleLabel];
+    return view;
+}
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    return CGSizeMake(kScreenW, 20.0f);
+}
+#pragma mark - touch
 - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(nullable id)sender
 {
     return YES;
